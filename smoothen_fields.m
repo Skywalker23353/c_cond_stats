@@ -9,7 +9,12 @@ plot_results_flag = false;
 plot_surface_flag = true;
 save_figs = false;
 data_dir = '/work/home/satyam/satyam_files/CH4_jet_PF/2025_Runs/c_cond_stats/C_cond_fields_800';
-
+%%
+fields = {'SYm_CH4','SYm_O2','SYm_CO2','SYm_H2O'};
+bc_config = struct('width', 1, 'boundaries', {{'left', 'right'}});
+process_fields_with_boundary_zeroing('DataDir', data_dir, 'Fields', fields, ...
+                                      'BoundaryConfig', bc_config);
+%%
 fields = {
 %          FILENAME,          LATEX NAME,                           FIG NAME, WINDOW, N_CYCLES
         'Heatrelease', '$\langle \dot{\omega}_{T}|c\rangle$', 7, 3;
@@ -28,10 +33,10 @@ fields = {
         'O2','$\langle O2|c\rangle$', 7, 3;
         'OH','$\langle OH|c\rangle$', 5, 2;
         'H2','$\langle H2|c\rangle$', 5, 2;
-        'SYm_CH4','$\langle \dot{\omega}_{CH_4}|c\rangle$', 5, 3;
-        'SYm_O2','$\langle \dot{\omega}_{O_2}|c\rangle$', 5, 3;
-        'SYm_CO2','$\langle \dot{\omega}_{CO_2}|c\rangle$', 5, 3;
-        'SYm_H2O','$\langle \dot{\omega}_{H_2O}|c\rangle$', 9, 3;
+        'SYm_CH4_boundary_zero','$\langle \dot{\omega}_{CH_4}|c\rangle$', 5, 3;
+        'SYm_O2_boundary_zero','$\langle \dot{\omega}_{O_2}|c\rangle$', 5, 3;
+        'SYm_CO2_boundary_zero','$\langle \dot{\omega}_{CO_2}|c\rangle$', 5, 3;
+        'SYm_H2O_boundary_zero','$\langle \dot{\omega}_{H_2O}|c\rangle$', 9, 3;
         };
 
 batch_smooth_fields(data_dir, save_results_flag, fields, plot_results_flag,plot_surface_flag,save_figs);
