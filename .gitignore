@@ -8,7 +8,7 @@
 *.asv
 *.m~
 *.tmp
-
+Ccond_stats_computation_*
 # OS generated files
 .DS_Store
 .DS_Store?
