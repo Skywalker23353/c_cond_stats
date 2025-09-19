@@ -62,7 +62,7 @@ addParameter(p, 'SaveOutput', true, @islogical);
 addParameter(p, 'PlotResults', false, @islogical);
 addParameter(p, 'PlotSurface', false, @islogical);
 addParameter(p, 'SaveFigs', false, @islogical);
-addParameter(p, 'OutputSuffix', '_boundary_zero', @ischar);
+% addParameter(p, 'OutputSuffix', '_boundary_zero', @ischar);
 addParameter(p, 'BoundaryConfig', struct('width', 1, 'boundaries', {{'all'}}), @isstruct);
 
 parse(p, varargin{:});
@@ -73,7 +73,7 @@ save_output = p.Results.SaveOutput;
 plot_results = p.Results.PlotResults;
 plot_surface = p.Results.PlotSurface;
 save_figs = p.Results.SaveFigs;
-output_suffix = p.Results.OutputSuffix;
+% output_suffix = p.Results.OutputSuffix;
 default_boundary_config = p.Results.BoundaryConfig;
 
 %% Validation
@@ -125,7 +125,7 @@ for i = 1:size(field_configs, 1)
     try
         % Process individual field
         success = process_single_field(data_dir, field_name, boundary_config, ...
-                                     save_output, output_suffix, plot_results, ...
+                                     save_output, plot_results, ...
                                      plot_surface, save_figs, C_MAT, Z_MAT, D, i);
         
         if success
@@ -154,7 +154,7 @@ fprintf('\n=== Boundary Zeroing Complete ===\n');
 end
 
 function success = process_single_field(data_dir, field_name, boundary_config, ...
-                                       save_output, output_suffix, plot_results, ...
+                                       save_output, plot_results, ...
                                        plot_surface, save_figs, C_MAT, Z_MAT, D, field_idx)
 % Process a single field with boundary zeroing
 
@@ -162,7 +162,7 @@ success = false;
 
 % Define file paths
 input_file = sprintf('%s/%s.mat', data_dir, field_name);
-output_file = sprintf('%s/%s%s.mat', data_dir, field_name, output_suffix);
+output_file = sprintf('%s/%s.mat', data_dir, field_name);
 
 % Check if input file exists
 if ~exist(input_file, 'file')
