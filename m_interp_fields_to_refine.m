@@ -1,7 +1,7 @@
 clear;clc;
 %%
-data_dir = '/work/home/satyam/satyam_files/CH4_jet_PF/2025_Runs/c_cond_stats/C_cond_fields_800';
-fields = {'SYm_CH4','SYm_O2','SYm_CO2','SYm_H2O'};
+data_dir = '/work/home/satyam/satyam_files/CH4_jet_PF/2025_Runs/c_cond_stats/C_cond_fields_800_10D';
+fields = {'Heatrelease','density','Temperature','CH4','O2','CO2','H2O','SYm_CH4','SYm_O2','SYm_CO2','SYm_H2O'};
 save_flag = true;
 
 
