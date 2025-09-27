@@ -36,6 +36,7 @@ function data_corrected = replace_zeros_with_base_values(data)
     % Get matrix dimensions
     [num_rows, ~] = size(data);
     
+    base_z_idx = find(data_corrected(:,1) == 0 ,1) ;
     % Process each Z row independently
     for row = 1:num_rows
         row_data = data_corrected(row, :);
@@ -48,19 +49,8 @@ function data_corrected = replace_zeros_with_base_values(data)
             continue;
         end
         
-        % Find non-zero values starting from the base (rightmost of row)
-        non_zero_indices = find(row_data ~= 0);
-        
-        % If no non-zero values exist, skip this row
-        if isempty(non_zero_indices)
-            warning('Row %d contains only zeros - no replacement possible', row);
-            continue;
-        end
-        
-        % Start from the right (highest column index) to find base values
-        % Sort non-zero indices in descending order (base first)
-        base_indices = sort(non_zero_indices, 'descend');
-        base_values = row_data(base_indices);
+        base_values = data_corrected(base_z_idx-1,:);
+%         base_values = data_corrected(1,:);
         
         % Get only the FIRST N zero values (leftmost zeros)
         zero_indices_sorted = sort(zero_indices);  % Sort zeros left to right

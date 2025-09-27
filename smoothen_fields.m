@@ -6,9 +6,9 @@ addpath('/work/home/satyam/satyam_files/CH4_jet_PF/2025_Runs/c_cond_stats/functi
 %% Inputs
 save_results_flag = false;
 plot_results_flag = true;
-plot_surface_flag = false;
+plot_surface_flag = true;
 save_figs = false;
-clamp_boundary_flag = false;
+clamp_boundary_flag = true;
 data_dir = '/work/home/satyam/satyam_files/CH4_jet_PF/2025_Runs/c_cond_stats/C_cond_fields_800_10D';
 %% DONE ONCE
 % fields = {'SYm_CH4';'SYm_O2';'SYm_CO2';'SYm_H2O'};
@@ -48,6 +48,7 @@ if clamp_boundary_flag
     process_fields_with_boundary_zeroing('DataDir', data_dir, 'Fields', fields, ...
                                           'BoundaryConfig', bc_config,'SaveOutput', true);
 end
+
 %%
 function f_smoothen_fields(varargin)
     % Parse input arguments
@@ -159,6 +160,7 @@ function f_smoothen_fields(varargin)
                 fprintf('Thresholding Heatrelease using alpha %e',alpha);
                 data.DF = threshold_data(data,alpha);
             end
+            data.fieldname = fieldsName;
             % Apply smoothing operation
             fprintf('  Applying smoothing...\n');
 %             smoothed_data = apply_smoothing(data, window);
@@ -191,8 +193,11 @@ function smoothed_data = apply_smoothing_and_populate_non_zero_data(data, window
     % Apply the multi-step smoothing operation
 
     % Replace zeros with the first non-zero value
-    field = remove_zero_near_centerline(data.DF);
-    temp_f = field;
+    if strcmp(data.fieldname,'Heatrelease')
+        temp_f = remove_zero_near_centerline(data.DF);
+    else
+        temp_f = replace_zeros_with_base_values(data.DF);
+    end
     for i = 1:n_cycle
         % Apply smoothing sequence: row -> row -> col -> col
         fprintf('    Step 1: Row smoothing...\n');
