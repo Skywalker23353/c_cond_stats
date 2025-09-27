@@ -5,6 +5,7 @@ addpath('/work/home/satyam/satyam_files/CH4_jet_PF/2025_Runs/c_cond_stats/functi
 
 %% Inputs
 save_results_flag = false;
+save_results_flag_final = false;
 plot_results_flag = true;
 plot_surface_flag = true;
 save_figs = false;
@@ -40,289 +41,41 @@ fields = {
         'SYm_H2O','$\langle \dot{\omega}_{H_2O}|c\rangle$', 3,3;%9, 3;%9,3
         };
 
-batch_smooth_fields(data_dir, save_results_flag, fields, plot_results_flag,plot_surface_flag,save_figs);
+% batch_smooth_fields(data_dir, save_results_flag, fields, plot_results_flag,plot_surface_flag,save_figs);
+% With boundary ignoring
+batch_smooth_fields('DataDir', data_dir, 'Fields', fields, 'PlotResults', true, ...
+                   'SaveOutput', save_results_flag,'PlotSurf', plot_surface_flag, 'SaveFigs', save_figs);
 %% DONE ONCE
 if clamp_boundary_flag
     fields = {'SYm_CH4_smooth';'SYm_O2_smooth';'SYm_CO2_smooth';'SYm_H2O_smooth'};
     bc_config = struct('width', 1, 'boundaries', {{'left', 'right'}});
     process_fields_with_boundary_zeroing('DataDir', data_dir, 'Fields', fields, ...
-                                          'BoundaryConfig', bc_config,'SaveOutput', true);
+                                          'PlotResults', true, 'BoundaryConfig', bc_config, 'SaveOutput', false);
 end
+% Define fields with their boundary values
+fields = {
+    'Temperature_smooth', struct('left', 800, 'right', 2319);
+    'density_smooth', struct('left', 0.5, 'right', 1.2);
+    'CH4_smooth', struct('left', 0.0, 'right', 0.1);
+    'O2_smooth', struct('left', 0.21, 'right', 0.0);
+    'CO2_smooth', struct('left', 0.0, 'right', 0.0);
+    'H2O_smooth', struct('left', 0.0, 'right', 0.0);
+};
 
+% Process the fields
+process_fields_with_boundary_values('DataDir', data_dir, 'Fields', fields, ...
+                                   'PlotResults', true, 'BoundaryWidth', 1, 'SaveOutput', false);
 %%
-function f_smoothen_fields(varargin)
-    % Parse input arguments
-    p = inputParser;
-    addParameter(p, 'DataDir', 'C_cond_fields_800', @ischar);
-    addParameter(p, 'Fields', {}, @iscell);
-    addParameter(p, 'AutoDetect', false, @islogical);
-    addParameter(p, 'SaveOutput', false, @islogical);
-    addParameter(p, 'PlotResults', false, @islogical);
-    addParameter(p, 'PlotSurf', false, @islogical);
-    addParameter(p, 'SaveFigs', false, @islogical);
-    
-    parse(p, varargin{:});
-    
-    data_dir = p.Results.DataDir;
-    specified_fields = p.Results.Fields(:,1);
-    specified_fields_fig_labels = p.Results.Fields(:,2);
-    if size(p.Results.Fields,2) >= 4
-        specified_windows = cell2mat(p.Results.Fields(:,3));
-        specified_n_cycles = cell2mat(p.Results.Fields(:,4));
-    else
-        % Default values if not specified
-        specified_windows = repmat(3, size(p.Results.Fields,1),1);
-        specified_n_cycles = repmat(3, size(p.Results.Fields,1),1);
-    end
-    auto_detect = p.Results.AutoDetect;
-    save_output = p.Results.SaveOutput;
-    plot_results = p.Results.PlotResults;
-    plot_surf_flag = p.Results.PlotSurf;
-    save_fig_flag = p.Results.SaveFigs;
-    alpha = 0.01;
-    
-    % Load coordinate data
-    coord_file = sprintf("%s/CZ_data.mat", data_dir);
-    if exist(coord_file, 'file')
-        coord_data = load(coord_file);
-        C_MAT = coord_data.C_MAT;
-        Z_MAT = coord_data.Z_MAT;
-    else
-        fprintf('Warning: Coordinate file %s not found. Using default coordinates.\n', coord_file);
-        C_MAT = [];
-        Z_MAT = [];
-    end
-    
-    D = 2e-3;
-    
-    % Determine which fields to process
-    if auto_detect && isempty(specified_fields)
-        % Auto-detect all .mat files in the directory
-        if exist(data_dir, 'dir')
-            mat_files = dir(fullfile(data_dir, '*.mat'));
-            field_names = {};
-            field_fig_labels = {};
-            field_windows = [];
-            field_n_cycles = [];
-            for i = 1:length(mat_files)
-                [~, name, ~] = fileparts(mat_files(i).name);
-                % Skip coordinate files and already smoothed files
-                if ~contains(name, 'smooth') && ~strcmp(name, 'Heatrelease')
-                    field_names{end+1} = name;
-                    field_fig_labels{end+1} = name; % Default label
-                    field_windows(end+1) = 3; % Default
-                    field_n_cycles(end+1) = 3; % Default
-                end
-            end
-        else
-            error('Data directory %s not found!', data_dir);
-        end
-    elseif ~isempty(specified_fields)
-        field_names = specified_fields;
-        field_fig_labels = specified_fields_fig_labels;
-        field_windows = specified_windows;
-        field_n_cycles = specified_n_cycles;
-    else
-        % Default to Temperature field
-        field_names = {'Temperature'};
-        field_fig_labels = {'Temperature'};
-        field_windows = 3;
-        field_n_cycles = 3;
-    end
-    
-    fprintf('Processing %d fields\n', length(field_names));
-    
-    % Process each field
-    for i = 1:length(field_names)
-        fieldsName = field_names{i};
-        fieldsfigLabel = field_fig_labels{i};
-        fprintf('Processing field %d/%d: %s with window=%d, n_cycles=%d\n', i, length(field_names), fieldsName, field_windows(i), field_n_cycles(i));
-        
-        % Define input and output filenames
-        input_file = sprintf("%s/%s.mat", data_dir, fieldsName);
-        opfilename = sprintf("%s/%s_smooth", data_dir, fieldsName);
-        
-        % Check if input file exists
-        if ~exist(input_file, 'file')
-            fprintf('Warning: Input file %s not found. Skipping.\n', input_file);
-            continue;
-        end
-        
-        % Load data
-        try
-            data = load(input_file);
-            
-            if ~isfield(data, 'DF')
-                fprintf('Warning: Field DF not found in %s. Skipping.\n', input_file);
-                continue;
-            end
-            if strcmp(fieldsName,'Heatrelease')
-                fprintf('Thresholding Heatrelease using alpha %e',alpha);
-                data.DF = threshold_data(data,alpha);
-            end
-            data.fieldname = fieldsName;
-            % Apply smoothing operation
-            fprintf('  Applying smoothing...\n');
-%             smoothed_data = apply_smoothing(data, window);
-            smoothed_data = apply_smoothing_and_populate_non_zero_data(data, field_windows(i), field_n_cycles(i));
-            
-            % Save smoothed data
-            if save_output
-                fprintf('  Saving to %s.mat\n', opfilename);
-                save(sprintf('%s.mat', opfilename), '-struct', 'smoothed_data');
-            end
-            
-            % Optional plotting
-            if plot_results && ~isempty(C_MAT) && ~isempty(Z_MAT)
-                plot_comparison(data_dir,data, smoothed_data, C_MAT, Z_MAT, D, fieldsName, i,save_fig_flag);
-            elseif plot_surf_flag && ~isempty(C_MAT) && ~isempty(Z_MAT)
-%                     plot_surf_field(data_dir,data.DF,C_MAT,Z_MAT,D,fieldsName,fieldsfigLabel,save_fig_flag,i*30);
-                    plot_surf_field(data_dir,smoothed_data.DF,C_MAT,Z_MAT,D,fieldsName,fieldsfigLabel,save_fig_flag,4*i);
-            end
-            
-        catch ME
-            fprintf('Error processing %s: %s\n', fieldsName, ME.message);
-            continue;
-        end
-    end
-    
-    fprintf('Smoothing complete for all fields!\n');
-end
-
-function smoothed_data = apply_smoothing_and_populate_non_zero_data(data, window, n_cycle)
-    % Apply the multi-step smoothing operation
-
-    % Replace zeros with the first non-zero value
-    if strcmp(data.fieldname,'Heatrelease')
-        temp_f = remove_zero_near_centerline(data.DF);
-    else
-        temp_f = replace_zeros_with_base_values(data.DF);
-    end
-    for i = 1:n_cycle
-        % Apply smoothing sequence: row -> row -> col -> col
-        fprintf('    Step 1: Row smoothing...\n');
-        temp_fr = myutils.f_return_smooth_field(temp_f, window, 'row');
-        
-        fprintf('    Step 2: Row smoothing (second pass)...\n');
-        temp_fc = myutils.f_return_smooth_field(temp_fr, window, 'col');
-        
-        temp_f = temp_fc;
-    end
-    fprintf('    Total Smoothing cycle : %d...\n',i);clear i;
-        
-    % Create output structure
-    smoothed_data = data;
-    smoothed_data.DF = temp_f;
-end
-
-function plot_comparison(data_dir,original_data, smoothed_data, C_MAT, Z_MAT, D, fieldsName, field_idx,save_fig_flag)
-    % Plot comparison between original and smoothed data
-    original_min = min(original_data.DF(:));
-    original_max = max(original_data.DF(:));
-
-    figure_handle = figure(100 + field_idx);
-    set(figure_handle, 'Position', [100 + field_idx*50, 100 + field_idx*30, 1200, 500]);
-    
-    % Original data
-    subplot(1, 2, 1);
-    myutils.plot_contourf(figure_handle, C_MAT, Z_MAT/D, original_data.DF, ...
-        '$c$', '$z/D$', sprintf('$\\langle %s|c\\rangle$ (Original)', fieldsName));
-    title(sprintf('%s - Original', fieldsName), 'Interpreter', 'latex');
-    pbaspect([1, 2, 1]);
-    caxis([original_min, original_max]);
-    
-    % Smoothed data
-    subplot(1, 2, 2);
-    myutils.plot_contourf(figure_handle, C_MAT, Z_MAT/D, smoothed_data.DF, ...
-        '$c$', '$z/D$', sprintf('$\\langle %s|c\\rangle$ (Smoothed)', fieldsName));
-    title(sprintf('%s - Smoothed', fieldsName), 'Interpreter', 'latex');
-    pbaspect([1, 2, 1]);
-    caxis([original_min, original_max]);
-    
-    sgtitle(sprintf('Smoothing Comparison: %s', fieldsName), 'FontSize', 14);
-    
-    % Save comparison plot
-    if save_fig_flag
-        figdir = 'smoothened_figs';
-        if ~isfolder(sprintf('%s/%s',data_dir,figdir));mkdir(sprintf('%s/%s',data_dir,figdir));end
-                    
-        saveas(figure_handle, sprintf('%s/%s/%s_smoothing_comparison.png', data_dir,figdir,fieldsName));
-        saveas(figure_handle, sprintf('%s/%s/%s_smoothing_comparison.fig', data_dir,figdir,fieldsName));
-    end
-end
-
-function smoothed_data = apply_smoothing(data, window)
-    % Apply the multi-step smoothing operation
-    
-    field = data.DF;
-    
-    % Replace zeros with the first non-zero value
-    zero_indices = find(field == 0);
-    if ~isempty(zero_indices)
-        field(zero_indices) = data.DF(1,1);
-    end
-
-%     field = remove_zero_near_centerline(data.DF);
-    
-    % Apply smoothing sequence: row -> row -> col -> col
-    fprintf('    Step 1: Row smoothing...\n');
-    temp_f1 = myutils.f_return_smooth_field(field, window, 'row');
-    
-    fprintf('    Step 2: Row smoothing (second pass)...\n');
-    temp_f2 = myutils.f_return_smooth_field(temp_f1, window, 'row');
-    
-    fprintf('    Step 3: Column smoothing...\n');
-    temp_f3 = myutils.f_return_smooth_field(temp_f2, window, 'col');
-    
-    fprintf('    Step 4: Column smoothing (second pass)...\n');
-    temp_f = myutils.f_return_smooth_field(temp_f3, window, 'col');
-    
-    % Create output structure
-    smoothed_data = data;
-    smoothed_data.DF = temp_f;
-end
-
-% Batch processing function for convenience
-function batch_smooth_fields(data_dir, save_flag, field_list, plot_results_flag, plot_surf_flag, save_figs)
-    % Convenience function for batch processing
-    if nargin < 6
-        save_figs = false;
-    end
-    if nargin < 5
-        plot_surf_flag = false;
-    end
-    if nargin < 4
-        plot_results_flag = false;
-    end
-    if nargin < 3
-        field_list = {};
-    end
-    if nargin < 2
-        save_flag = false;
-    end
-    
-    f_smoothen_fields('DataDir', data_dir, 'Fields', field_list, ...
-                   'SaveOutput', save_flag, 'PlotResults', plot_results_flag, 'PlotSurf', plot_surf_flag, 'SaveFigs', save_figs);
-end
-
-% Quick smoothing function for single field (backward compatibility)
-function quick_smooth_single_field(fieldsName, save_flag, data_dir, window)
-    % Quick function to smooth a single field (maintains original functionality)
-    if nargin < 4
-        window = 3;
-    end
-    if nargin < 3
-        data_dir = 'C_cond_fields_800';
-    end
-    if nargin < 2
-        save_flag = false;
-    end
-    
-    f_smoothen_fields('DataDir', data_dir, 'Fields', {fieldsName}, 'Window', window, ...
-                   'AutoDetect', false, 'SaveOutput', save_flag, 'PlotResults', true);
-end
-function field = threshold_data(data,alpha)
-    threshold = alpha*max(max(data.DF));
-    field = data.DF;
-    field(find(field <= threshold)) = 0;
-end
+fields = {
+%          FILENAME,          LATEX NAME,                           FIG NAME, WINDOW, N_CYCLES
+        'Heatrelease_boundary_set', '$\langle \dot{\omega}_{T}|c\rangle$', 3,3;%7, 3;
+        'Temperature_boundary_set', '$\langle T|c\rangle$', 3,3;%9, 3;
+        'density_boundary_set','$\langle \rho|c\rangle$', 3,3;%11, 3;
+        'CH4_boundary_set','$\langle CH4|c\rangle$', 3,3;%11, 3;
+        'CO2_boundary_set','$\langle CO2|c\rangle$', 3, 3;
+        'H2O_boundary_set','$\langle H2O|c\rangle$', 3, 3;
+        'O2_boundary_set','$\langle O2|c\rangle$', 3, 3;
+        };
+batch_smooth_fields('DataDir', data_dir, 'Fields', fields, 'PlotResults', true, ...
+                   'SaveOutput', save_results_flag_final,'PlotSurf', plot_surface_flag, 'SaveFigs', save_figs, ...
+                   'IgnoreBoundaries', {'left', 'right'}, 'BoundaryWidth', 1);
