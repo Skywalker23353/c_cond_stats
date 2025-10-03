@@ -44,7 +44,7 @@ addParameter(p, 'DataDir', '', @ischar);
 addParameter(p, 'Fields', {}, @iscell);
 addParameter(p, 'SaveOutput', true, @islogical);
 addParameter(p, 'PlotResults', false, @islogical);
-addParameter(p, 'OutputSuffix', '_boundary_set', @ischar);
+addParameter(p, 'OutputSuffix', '_bc', @ischar);
 addParameter(p, 'BoundaryWidth', 1, @(x) isnumeric(x) && isscalar(x) && x > 0);
 
 parse(p, varargin{:});

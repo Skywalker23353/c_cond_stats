@@ -165,7 +165,7 @@ function f_smoothen_fields(varargin)
             fprintf('  Applying smoothing...\n');
             if isempty(ignore_boundaries)
                 % Standard smoothing
-                smoothed_data = apply_smoothing(data, field_windows(i));
+                smoothed_data = apply_smoothing_and_populate_non_zero_data(data, field_windows(i),field_n_cycles(i));
             else
                 % Smoothing with boundary ignoring
                 smoothed_data = apply_smoothing_ignore_boundaries(data, field_windows(i), ignore_boundaries, boundary_width);

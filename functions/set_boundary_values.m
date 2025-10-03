@@ -108,10 +108,10 @@ width_right = min(width_right, cols);
 %% Determine boundary values for each side
 if isstruct(boundary_value)
     % Different values for each boundary
-    val_top = boundary_value.top;
-    val_bottom = boundary_value.bottom;
-    val_left = boundary_value.left;
-    val_right = boundary_value.right;
+     if isfield(boundary_value,"top");val_top = boundary_value.top;end
+     if isfield(boundary_value,"bottom");val_bottom = boundary_value.bottom;end
+     if isfield(boundary_value,"left");val_left = boundary_value.left;end
+     if isfield(boundary_value,"right");val_right = boundary_value.right;end
 else
     % Same value for all boundaries
     val_top = boundary_value;
