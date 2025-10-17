@@ -8,18 +8,19 @@ addpath('functions');
 
 % Define all fields to process
 field_list = {
-    'Heatrelease';           % Heat Release Rate
-    'density';          % Density  
-    'Temperature';            % Temperature
-    'CH4';          % Methane Mass Fraction
-    'O2';           % Oxygen Mass Fraction
-    'CO2';          % Carbon Dioxide Mass Fraction
-    'H2O';          % Water Mass Fraction
-%     };
-    'SYm_CH4';      % Methane Mass Fraction (Symmetry)
-    'SYm_O2';       % Oxygen Mass Fraction (Symmetry) 
-    'SYm_CO2';      % Carbon Dioxide Mass Fraction (Symmetry)
-    'SYm_H2O';      % Water Mass Fraction (Symmetry)
+%     'Heatrelease';     
+%     'density';       
+%     'Temperature';  
+%     'CH4';          % Mass Fraction
+%     'O2';          
+%     'CO2';         
+%     'H2O';          
+    'N2';
+    
+%     'SYm_CH4';      % mass production rate
+%     'SYm_O2';       
+%     'SYm_CO2';      
+%     'SYm_H2O';      
 
 };
 
@@ -29,12 +30,12 @@ common_params = struct(...
     'LESEnd', 1001, ...
     'Yu', 0.222606, ...
     'Yb', 0.0411, ...
-    'delC', 0.02, ...
+    'delC', 0.1, ... %     'delC', 0.075
     'D', 2e-3, ...
     'xlim_factor', 5, ...
     'zlim_factor', 10, ...
-    'OutputDir', 'C_cond_fields_800_10D', ...
-    'WorkDir', '/store1/anindya/CH4_jet_PF/2025_runs/LES_base_case_v6/TB1_run_with_chem_src', ...
+    'OutputDir', 'C_cond_fields_800_10D_coarse_bin_0.15', ...
+    'WorkDir', '/work/home/anindya/Anindya_Cases/CH4_jet_PF/2025_Runs/LES_base_case_v6/TB1_run', ...
     'NumWorkers', 24);
 % 'WorkDir','/work/home/satyam/satyam_files/CH4_jet_PF/2025_Runs/LES_base_case_v6/filtering_run3/TB1_run_with_chem_src',
 %     'WorkDir', '/store1/anindya/CH4_jet_PF/2025_runs/LES_base_case_v6/TB1_run_with_chem_src', ...

@@ -9,8 +9,9 @@ save_data = true;  % New flag to save interpolated data to disk
 data_dir = '/work/home/satyam/satyam_files/CH4_jet_PF/2025_Runs/c_cond_stats/C_cond_fields_800_10D_n';
 output_dir = '/work/home/satyam/satyam_files/CH4_jet_PF/2025_Runs/c_cond_stats/C_cond_fields_800_10D_n/interpolated/';
 D = 2e-3;
+bc_hrr = [0 0 0 0];
 fields = {
-    'Heatrelease_smooth', '$\langle \dot{\omega}_{T}|c\rangle$', 'Heat Release Rate';
+    'Heatrelease_smooth', '$\langle \dot{\omega}_{T}|c\rangle$', 'Heat Release Rate';%, bc_hrr;
     'Temperature_smooth_bc_smooth', '$\langle T|c\rangle$', 'Temperature';
     'density_smooth_bc_smooth', '$\langle \rho|c\rangle$', 'density';
     'CH4_smooth_bc_smooth', '$\langle CH_4|c\rangle$', 'CH4';
@@ -19,7 +20,7 @@ fields = {
     'H2O_smooth_bc_smooth', '$\langle H_20|c\rangle$', 'H2O';
     % Add more fields as needed
 };
-C_n = [0.1, 0.3, 0.5, 0.7, 0.9];  % Vector of c-values for interpolation
+C_n = [0.0, 0.1, 0.3, 0.5, 0.7, 0.9, 1.0];  % Vector of c-values for interpolation
 
 %% Load coordinate data
 fprintf('Loading coordinate data from CZ_data.mat...\n');
@@ -39,6 +40,7 @@ for i = 1:size(fields, 1)
     field_name = fields{i, 1};
     latex_name = fields{i, 2};
     fig_name = fields{i, 3};
+%     bc_vec = field_name{i, 4};
 
     mat_file = sprintf('%s.mat', field_name);
 
@@ -54,6 +56,9 @@ for i = 1:size(fields, 1)
     % Interpolate at C_n values
     [DF_interp, C_interp, Z_interp] = interpolate_at_c(DF, C_MAT_o, Z_MAT_o, C_n);
     DF = DF_interp;  % Use interpolated data for plotting
+    
+    bc_val
+    DF = set_boundary_values()
     if i == 1
         C_MAT = C_interp;  % Update C_MAT to interpolated values
         Z_MAT = Z_interp;  % Update Z_MAT to interpolated values
