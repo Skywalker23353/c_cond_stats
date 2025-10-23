@@ -12,18 +12,18 @@ field_list = {
 %     'density';       
 %     'Temperature';  
 %     'CH4';          % Mass Fraction
-    'CH2O';
-    'CH3';
+%     'CH2O';
+%     'CH3';
 %     'CO2';
-    'CO';
-    'HO2';
-    'H2';
+%     'CO';
+%     'HO2';
+%     'H2';
     'H';
 %     'H2O';
 %     'O2'; 
-    'O';
-    'OH';
-    'N2';
+%     'O';
+%     'OH';
+%     'N2';
        
 %     'SYm_CH4';      % mass production rate
 %     'SYm_O2';       
@@ -31,6 +31,8 @@ field_list = {
 %     'SYm_H2O';      
 
 };
+%%
+node_list = [026];%001,002,004,005,007,001,002,004,015,021,
 bin_size = 0.02;
 c_vec = bin_size/2:bin_size:1 - bin_size/2;
 % Common parameters for all fields
@@ -44,16 +46,15 @@ common_params = struct(...
     'D', 2e-3, ...
     'xlim_factor', 5, ...
     'zlim_factor', 10, ...
-    'OutputDir', 'C_cond_fields_800_10D_coarse', ...
-    'WorkDir', '/store1/anindya/CH4_jet_PF/2025_runs/LES_base_case_v6/TB1_run', ...
+    'OutputDir', 'C_cond_fields_800_10D_bin_0.02', ...
+    'WorkDir', '/work/home/anindya/Anindya_Cases/CH4_jet_PF/2025_Runs/LES_base_case_v6/TB1_run', ...
     'NumWorkers', 24);
 % 'WorkDir','/work/home/satyam/satyam_files/CH4_jet_PF/2025_Runs/LES_base_case_v6/filtering_run3/TB1_run_with_chem_src',
 %     'WorkDir', '/store1/anindya/CH4_jet_PF/2025_runs/LES_base_case_v6/TB1_run_with_chem_src', ...
 
 fprintf('Creating conditional statistics computation scripts...\n');
 fprintf('Total fields to process: %d\n\n', length(field_list));
-%%
-node_list = [015,016,018,020];%001,002,004,005,007,
+
 %%
 
 % Loop through each field and create the script
@@ -70,6 +71,7 @@ for i = 1:length(field_list)
             'LESEnd', common_params.LESEnd, ...
             'Yu', common_params.Yu, ...
             'Yb', common_params.Yb, ...
+            'c_vec',common_params.c_vec, ...
             'delC', common_params.delC, ...
             'D', common_params.D, ...
             'xlim_factor', common_params.xlim_factor, ...

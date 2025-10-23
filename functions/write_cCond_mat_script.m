@@ -29,11 +29,11 @@ function write_cCond_mat_script(varargin)
     
     % Format c_vec if provided
     if ~isempty(params.c_vec)
-        c_vec_str = sprintf('%.4f,', params.c_vec);
+        c_vec_str = sprintf('%.3f,', params.c_vec);
         c_vec_str = c_vec_str(1:end-1); % Remove trailing comma
-        c_line = sprintf('delC = %.4f;  C = [%s]'';\n', params.delC, c_vec_str);
+        c_line = sprintf('delC = %.3f;  C = [%s]'';\n', params.delC, c_vec_str);
     else
-        c_line = sprintf('delC = %.4f;  C = (0.1:0.2:0.9)'';\n', params.delC);
+        c_line = sprintf('delC = %.3f;  C = (0.1:0.2:0.9)'';\n', params.delC);
     end
     
     % Create the script content following CFD codebase patterns
