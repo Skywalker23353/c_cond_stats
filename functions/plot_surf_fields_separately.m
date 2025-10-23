@@ -15,7 +15,7 @@ function plot_surf_fields_separately(data_dir,fields,C_MAT,Z_MAT,save_fig,plot_s
             data = load(filepath);
             
             % Create separate figure for each field
-            fidx = 10 + i;
+            fidx = 20 + i;
             figure(fidx);
             
             if isfield(data, 'DF')
