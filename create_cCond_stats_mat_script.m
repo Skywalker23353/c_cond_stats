@@ -2,7 +2,6 @@
 % This script calls write_cCond_mat_script for each specified field
 clear all;
 clc;
-
 % Add functions directory to path
 addpath('functions');
 %%
@@ -18,21 +17,29 @@ field_list = {
 %     'CO';
 %     'HO2';
 %     'H2';
-    'H';
+%     'H';
 %     'H2O';
 %     'O2'; 
 %     'O';
 %     'OH';
-%     'N2';
-       
-%     'SYm_CH4';      % mass production rate
-%     'SYm_O2';       
-%     'SYm_CO2';      
-%     'SYm_H2O';      
-
+%     'N2';      
+%     'SYm_CH4';
+    'SYm_CH2O';
+    'SYm_CH3';
+    'SYm_CO';
+    'SYm_H';
+    'SYm_H2';
+    'SYm_HO2';
+%     'SYm_O2';
+    'SYm_O';
+    'SYm_OH';
+%     'SYm_CO2';
+%     'SYm_H2O';
+    'SYm_N2';      
 };
 %%
-node_list = [026];%001,002,004,005,007,001,002,004,015,021,
+node_free = [021,015];%001,002,004,005,007,001,002,004,015,021
+
 bin_size = 0.02;
 c_vec = bin_size/2:bin_size:1 - bin_size/2;
 % Common parameters for all fields
@@ -47,7 +54,7 @@ common_params = struct(...
     'xlim_factor', 5, ...
     'zlim_factor', 10, ...
     'OutputDir', 'C_cond_fields_800_10D_bin_0.02', ...
-    'WorkDir', '/work/home/anindya/Anindya_Cases/CH4_jet_PF/2025_Runs/LES_base_case_v6/TB1_run', ...
+    'WorkDir', '/work/home/anindya/Anindya_Cases/CH4_jet_PF/2025_Runs/LES_base_case_v6/TB1_run_with_chem_src', ...
     'NumWorkers', 24);
 % 'WorkDir','/work/home/satyam/satyam_files/CH4_jet_PF/2025_Runs/LES_base_case_v6/filtering_run3/TB1_run_with_chem_src',
 %     'WorkDir', '/store1/anindya/CH4_jet_PF/2025_runs/LES_base_case_v6/TB1_run_with_chem_src', ...
@@ -56,6 +63,7 @@ fprintf('Creating conditional statistics computation scripts...\n');
 fprintf('Total fields to process: %d\n\n', length(field_list));
 
 %%
+node_list = node_free(mod(0:length(field_list)-1,length(node_free)) + 1);
 
 % Loop through each field and create the script
 for i = 1:length(field_list)

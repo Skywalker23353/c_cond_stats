@@ -19,7 +19,7 @@ Avgf = zeros(Nc,NZa);
 for z_idx = 1:NZa
     z_idx
     for f_idx =Ns:Ne
-        f_idx
+%         f_idx
         %extract field
         A_f = get_burner_field(wkdir,f_idx,field_name,NRa,NZa);
         C_f = get_overset_field(wkdir,f_idx,field_name,NZc);
@@ -40,7 +40,7 @@ for z_idx = 1:NZa
             %Annular Mesh%%%%%
             for i=ann_mesh_idx:NRa
                 for j=1:NAa
-                    if (A_c(i,j) >= (c(c_idx,1)-delc)) && (A_c(i,j) < (c(c_idx,1)+delc))
+                    if (A_c(i,j) > (c(c_idx,1)-delc)) && (A_c(i,j) <= (c(c_idx,1)+delc))
                         
                         Avgf(c_idx,z_idx) = (Nsamp(c_idx,z_idx)*Avgf(c_idx,z_idx) + A_F(i,j))/(Nsamp(c_idx,z_idx)+1);
                         Nsamp(c_idx,z_idx) = Nsamp(c_idx,z_idx) + 1;
@@ -54,7 +54,7 @@ for z_idx = 1:NZa
                 for j=1:NAc
     
                     if(C_r(i,j,z_idx) < R0) 
-                        if (C_c(i,j) >= (c(c_idx,1)-delc)) && (C_c(i,j) < (c(c_idx,1)+delc))
+                        if (C_c(i,j) > (c(c_idx,1)-delc)) && (C_c(i,j) <= (c(c_idx,1)+delc))
                         
                         Avgf(c_idx,z_idx) = (Nsamp(c_idx,z_idx)*Avgf(c_idx,z_idx) + C_F(i,j))/(Nsamp(c_idx,z_idx)+1);
                         Nsamp(c_idx,z_idx) = Nsamp(c_idx,z_idx) + 1;
@@ -68,9 +68,6 @@ for z_idx = 1:NZa
         end
     end
 end
-% idx = find(Avgf>0,1);
-% c = c(idx:length(c),1);
-% Avgf = Avgf(idx:length(Avgf),1);
 end
 
 
