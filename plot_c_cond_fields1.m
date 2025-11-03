@@ -6,7 +6,7 @@ addpath('/work/home/satyam/satyam_files/CH4_jet_PF/2025_Runs/c_cond_stats/functi
 save_fig = false;
 plot_smooth_data = false;
 % data_dir = '/work/home/satyam/satyam_files/CH4_jet_PF/2025_Runs/c_cond_stats/C_cond_fields_800_10D_n';
-data_dir = '/work/home/satyam/satyam_files/CH4_jet_PF/2025_Runs/c_cond_stats/C_cond_fields_800_10D_coarse';
+data_dir = '/work/home/satyam/satyam_files/CH4_jet_PF/2025_Runs/c_cond_stats/C_cond_fields_800_10D_bin_0.02/noz';
 
     fields = {
 %          FILENAME,          LATEX NAME,                           FIG NAME
@@ -14,23 +14,23 @@ data_dir = '/work/home/satyam/satyam_files/CH4_jet_PF/2025_Runs/c_cond_stats/C_c
 %         'Temperature', '$\langle T|c\rangle$', 'Temperature';
 %         'density','$\langle \rho|c\rangle$', 'density';
 %         'CH4','$\langle CH4|c\rangle$', 'CH4';
-        'CH2O','$\langle CH2O|c\rangle$', 'CH2O';
-        'CH3','$\langle CH3|c\rangle$', 'CH3';
+%         'CH2O','$\langle CH2O|c\rangle$', 'CH2O';
+%         'CH3','$\langle CH3|c\rangle$', 'CH3';
 %         'CO2','$\langle CO2|c\rangle$', 'CO2';
-        'CO','$\langle CO|c\rangle$', 'CO';
+%         'CO','$\langle CO|c\rangle$', 'CO';
         'H','$\langle H|c\rangle$', 'H';
-        'H2','$\langle H2|c\rangle$', 'H2';
-        'HO2','$\langle HO2|c\rangle$', 'HO2';
-%         'H2O','$\langle H2O|c\rangle$', 'H2O';
-%         'O2','$\langle O2|c\rangle$', 'O2';
+%         'H2','$\langle H2|c\rangle$', 'H2';
+%         'HO2','$\langle HO2|c\rangle$', 'HO2';
+        'H2O','$\langle H2O|c\rangle$', 'H2O';
+        'O2','$\langle O2|c\rangle$', 'O2';
         'O','$\langle O|c\rangle$', 'O';
         'OH','$\langle OH|c\rangle$', 'OH';
-        'N2','$\langle N2|c\rangle$', 'N2';
+%         'N2','$\langle N2|c\rangle$', 'N2';
 
-%         'SYm_CH4','$\langle \dot{\omega}_{CH_4}|c\rangle$', 'SYm_CH4';
-%         'SYm_O2','$\langle \dot{\omega}_{O_2}|c\rangle$', 'SYm_O2';
-%         'SYm_CO2','$\langle \dot{\omega}_{CO_2}|c\rangle$', 'SYm_CO2';
-%         'SYm_H2O','$\langle \dot{\omega}_{H_2O}|c\rangle$', 'SYm_H2O';
+        'SYm_CH4','$\langle \dot{\omega}_{CH_4}|c\rangle$', 'SYm_CH4';
+        'SYm_O2','$\langle \dot{\omega}_{O_2}|c\rangle$', 'SYm_O2';
+        'SYm_CO2','$\langle \dot{\omega}_{CO_2}|c\rangle$', 'SYm_CO2';
+        'SYm_H2O','$\langle \dot{\omega}_{H_2O}|c\rangle$', 'SYm_H2O';
 
         };
     %% Load coordinate data (C_MAT and Z_MAT)

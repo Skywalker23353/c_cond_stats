@@ -1,7 +1,5 @@
-function smoothed_data = apply_smoothing(data, window)
+function smoothed_data = apply_smoothing(field, window)
     % Apply the multi-step smoothing operation
-    
-    field = data.DF;
     
     % Apply smoothing sequence: row -> row -> col -> col
     fprintf('    Step 1: Row smoothing...\n');
@@ -17,6 +15,5 @@ function smoothed_data = apply_smoothing(data, window)
     temp_f = myutils.f_return_smooth_field(temp_f3, window, 'col');
     
     % Create output structure
-    smoothed_data = data;
-    smoothed_data.DF = temp_f;
+    smoothed_data = temp_f;
 end

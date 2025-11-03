@@ -9,17 +9,15 @@ save_data = false;  % New flag to save interpolated data to disk
 data_dir = ['/work/home/satyam/satyam_files/CH4_jet_PF/2025_Runs/c_cond_stats' ...
     '/C_cond_fields_800_10D_bin_0.02/noz'];
 output_dir = ['/work/home/satyam/satyam_files/CH4_jet_PF/2025_Runs/c_cond_stats' ...
-    '/C_cond_fields_800_10D_bin_0.02/BC'];
+    '/C_cond_fields_800_10D_bin_0.02/noz/BC'];
 C_one_bc_file_path = ['/work/home/satyam/satyam_files/CH4_jet_PF/2025_Runs' ...
     '/derivatives_files/Interpolate_derivs_on_R_Z_plane' ...
-    '/interp_16_unilat_structured_pl_combustor_domain/interp_fields'];
+    '/interp_16_unilat_structured_pl_nozzle_domain_with_zero/interp_fields'];
 R_Z_file_path = ['/work/home/satyam/satyam_files/CH4_jet_PF/2025_Runs' ...
     '/derivatives_files/Interpolate_derivs_on_R_Z_plane'];
 %% parameters
 D = 2e-3;
-bc = struct();
-bc.c_zero = struct();bc.c_one = struct();
-c_one_bc_r = 2*D;
+c_one_bc_r = D;
 %%
 fprintf('Loading coordinate data from CZ_data.mat...\n');
 try
@@ -36,7 +34,7 @@ end
 C_New = [0.0, C_MAT_Old(1,:), 1.0];
 %% Load C_equals_one BC value
 try
-    C_one_bc_data = load(fullfile(C_one_bc_file_path, 'Mean_field_azim_avg.mat'));
+    C_one_bc_data = load(fullfile(C_one_bc_file_path, 'YO2_field_structured_grid_16_planes_1011260202_avg.mat'));
     fprintf('Successfully loaded C = 1 BC data\n');
 catch ME
     fprintf('Error loading C = 1 BC data: %s\n', ME.message);
@@ -51,10 +49,10 @@ catch ME
     return;
 end
 %% Find C_one bc radial index
-r_idx = find(R_Z_data.R1(1,:) > c_one_bc_r,1);
+r_idx = find(abs(R_Z_data.R2(1,:) - c_one_bc_r) <= 1e-6,1);
 n_z_idx = size(Z_MAT_Old,1);
 %% Load Boundary configuration file
-fields = load_BC_config_file(C_one_bc_data,r_idx,n_z_idx);
+fields = load_BC_config_file_noz(C_one_bc_data,r_idx,n_z_idx);
 
 %%
 if ~isfolder(output_dir); mkdir(output_dir);end

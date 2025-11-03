@@ -23,22 +23,22 @@ field_list = {
 %     'O';
 %     'OH';
 %     'N2';      
-%     'SYm_CH4';
-    'SYm_CH2O';
-    'SYm_CH3';
-    'SYm_CO';
+    'SYm_CH4';
+%     'SYm_CH2O';
+%     'SYm_CH3';
+%     'SYm_CO';
     'SYm_H';
-    'SYm_H2';
-    'SYm_HO2';
-%     'SYm_O2';
+%     'SYm_H2';
+%     'SYm_HO2';
+    'SYm_O2';
     'SYm_O';
     'SYm_OH';
-%     'SYm_CO2';
-%     'SYm_H2O';
-    'SYm_N2';      
+    'SYm_CO2';
+    'SYm_H2O';
+%     'SYm_N2';      
 };
 %%
-node_free = [021,015];%001,002,004,005,007,001,002,004,015,021
+node_free = [021,026,015];%001,002,004,005,007,001,002,004,015,021
 
 bin_size = 0.02;
 c_vec = bin_size/2:bin_size:1 - bin_size/2;
@@ -53,11 +53,12 @@ common_params = struct(...
     'D', 2e-3, ...
     'xlim_factor', 5, ...
     'zlim_factor', 10, ...
-    'OutputDir', 'C_cond_fields_800_10D_bin_0.02', ...
+    'OutputDir', 'C_cond_fields_800_10D_bin_0.02/noz', ...
     'WorkDir', '/work/home/anindya/Anindya_Cases/CH4_jet_PF/2025_Runs/LES_base_case_v6/TB1_run_with_chem_src', ...
     'NumWorkers', 24);
 % 'WorkDir','/work/home/satyam/satyam_files/CH4_jet_PF/2025_Runs/LES_base_case_v6/filtering_run3/TB1_run_with_chem_src',
 %     'WorkDir', '/store1/anindya/CH4_jet_PF/2025_runs/LES_base_case_v6/TB1_run_with_chem_src', ...
+% /work/home/anindya/Anindya_Cases/CH4_jet_PF/2025_Runs/LES_base_case_v6/TB1_run_with_chem_src
 
 fprintf('Creating conditional statistics computation scripts...\n');
 fprintf('Total fields to process: %d\n\n', length(field_list));
@@ -73,7 +74,7 @@ for i = 1:length(field_list)
     
     try
         % Call write_cCond_mat_script with field-specific parameters
-        write_cCond_mat_script(...
+        write_cCond_mat_script_noz(...
             'FieldName', field_name, ...
             'LESStart', common_params.LESStart, ...
             'LESEnd', common_params.LESEnd, ...
