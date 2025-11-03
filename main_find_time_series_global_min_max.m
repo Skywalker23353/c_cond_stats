@@ -21,7 +21,7 @@ dataset_name = 'Temperature';
 parpool('local',24);
 %% ========== FIND MAXIMUM VALUE ==========
 % Call the function
-[max_value, max_info, min_value, min_info] = find_min_max_in_h5_timeseries(LES_file_path, file_basename, start_index, end_index, ...
+[max_value, max_info, min_value, min_info] = find_max_in_h5_timeseries(LES_file_path, file_basename, start_index, end_index, ...
                                                    phase_name, grid_names, dataset_name);
 
 %% ========== DISPLAY RESULTS ==========

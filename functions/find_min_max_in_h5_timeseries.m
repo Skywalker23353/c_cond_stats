@@ -1,4 +1,4 @@
-function [max_value, max_info, min_value, min_info] = find_max_in_h5_timeseries(LES_file_path, file_basename, start_idx, end_idx, phase_name, grid_names, dataset_name)
+function [max_value, max_info, min_value, min_info] = find_min_max_in_h5_timeseries(LES_file_path, file_basename, start_idx, end_idx, phase_name, grid_names, dataset_name)
 % FIND_MAX_IN_H5_TIMESERIES Find maximum and minimum values of a quantity across HDF5 time series
 %
 % Inputs:
