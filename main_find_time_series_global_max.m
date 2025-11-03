@@ -3,27 +3,26 @@
 % to find the maximum value of a quantity across multiple HDF5 files
 
 clear; clc; close all;
-
+addpath('functions');
 %% ========== USER CONFIGURATION ==========
-
-% Time series file configuration
-file_basename = 'Reactants';  % Base name of the files
-start_index = 201;            % Starting file index
-end_index = 1201;             % Ending file index
-
-% HDF5 structure information
-phase_name = 'Reactants';      % Change to your phase name
-grid_names = {'burner';'overset'};        % Cell array of grid names (e.g., {'Grid1'} or {'Grid1', 'Grid2', 'Grid3'})
-dataset_name = 'Temperature';  % Change to your dataset name (e.g., 'O2', 'Temperature', 'Velocity')
-
 % Processing options
-use_parallel = true;        % Use parallel processing (parfor) for speed
 save_results = true;       % Save results to .mat file
 
+% Time series file configuration
+LES_file_path = '/store1/anindya/CH4_jet_PF/2025_runs/LES_base_case_v6/TB1_run';
+file_basename = 'Reactants';  % Base name of the files
+start_index = 101;            % Starting file index
+end_index = 102;             % Ending file index
+
+% HDF5 structure information
+phase_name = 'Reactants';      
+grid_names = {'burner';'overset'};      
+dataset_name = 'Temperature';  
+parpool('local',24);
 %% ========== FIND MAXIMUM VALUE ==========
 % Call the function
-[max_value, max_info] = find_max_in_h5_timeseries(file_basename, start_index, end_index, ...
-                                                   phase_name, grid_names, dataset_name, use_parallel);
+[max_value, max_info] = find_max_in_h5_timeseries(LES_file_path, file_basename, start_index, end_index, ...
+                                                   phase_name, grid_names, dataset_name);
 
 %% ========== DISPLAY RESULTS ==========
 

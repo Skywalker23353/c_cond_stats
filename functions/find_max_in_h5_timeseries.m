@@ -1,4 +1,4 @@
-function [max_value, max_info] = find_max_in_h5_timeseries(file_basename, start_idx, end_idx, phase_name, grid_names, dataset_name, use_parallel)
+function [max_value, max_info] = find_max_in_h5_timeseries(LES_file_path, file_basename, start_idx, end_idx, phase_name, grid_names, dataset_name)
 % FIND_MAX_IN_H5_TIMESERIES Find maximum value of a quantity across HDF5 time series
 %
 % Inputs:
@@ -50,25 +50,13 @@ function [max_value, max_info] = find_max_in_h5_timeseries(file_basename, start_
     tic;
     
     % Process files in parallel or serial
-    if use_parallel
-        fprintf('Using parallel processing...\n');
         parfor idx = 1:num_files
             file_idx = file_indices(idx);
-            file_path = sprintf('%s_%d.h5', file_basename, file_idx);
+            file_path = sprintf('%s/%s_%d.h5', LES_file_path,file_basename, file_idx);
             
             [file_max_values(idx), file_max_blocks{idx}, file_max_grids{idx}] = ...
                 process_single_file(file_path, phase_name, grid_names, dataset_name, idx, num_files);
         end
-    else
-        fprintf('Using serial processing...\n');
-        for idx = 1:num_files
-            file_idx = file_indices(idx);
-            file_path = sprintf('%s_%d.h5', file_basename, file_idx);
-            
-            [file_max_values(idx), file_max_blocks{idx}, file_max_grids{idx}] = ...
-                process_single_file(file_path, phase_name, grid_names, dataset_name, idx, num_files);
-        end
-    end
     
     elapsed_time = toc;
     

@@ -1,0 +1,6 @@
+ModuleCmd_Use.c(231):ERROR:64: Directory '/work/intel/oneapi/tbb/2021.5.0/modulefiles' not found
+ModuleCmd_Use.c(231):ERROR:64: Directory '/work/intel/oneapi/mkl/2022.0.1/modulefiles' not found
+ModuleCmd_Use.c(231):ERROR:64: Directory '/work/intel/oneapi/compiler/2022.0.1/modulefiles' not found
+ModuleCmd_Use.c(231):ERROR:64: Directory '/work/intel/oneapi/mpi/2021.5.0/modulefiles' not found
+/var/spool/pbs/aux/59659.yoda1
+24
