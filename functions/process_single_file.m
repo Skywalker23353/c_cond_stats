@@ -1,9 +1,12 @@
-function [file_max, max_block_id, max_grid_name] = process_single_file(file_path, phase_name, grid_names, dataset_name, file_num, total_files)
-    % Process a single HDF5 file and return its maximum value
+function [file_max, max_block_id, max_grid_name, file_min, min_block_id, min_grid_name] = process_single_file(file_path, phase_name, grid_names, dataset_name, file_num, total_files)
+    % Process a single HDF5 file and return its maximum and minimum values
     
     file_max = -inf;
+    file_min = inf;
     max_block_id = '';
+    min_block_id = '';
     max_grid_name = '';
+    min_grid_name = '';
     
     % Check if file exists
     if ~isfile(file_path)
@@ -47,11 +50,21 @@ function [file_max, max_block_id, max_grid_name] = process_single_file(file_path
                     % Find max in this dataset
                     local_max = max(data(:));
                     
+                    % Find min in this dataset
+                    local_min = min(data(:));
+                    
                     % Update file max if necessary
                     if local_max > file_max
                         file_max = local_max;
                         max_block_id = block_id;
                         max_grid_name = grid_name;
+                    end
+                    
+                    % Update file min if necessary
+                    if local_min < file_min
+                        file_min = local_min;
+                        min_block_id = block_id;
+                        min_grid_name = grid_name;
                     end
                     
                 catch

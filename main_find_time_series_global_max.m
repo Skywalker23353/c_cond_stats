@@ -21,7 +21,7 @@ dataset_name = 'Temperature';
 parpool('local',24);
 %% ========== FIND MAXIMUM VALUE ==========
 % Call the function
-[max_value, max_info] = find_max_in_h5_timeseries(LES_file_path, file_basename, start_index, end_index, ...
+[max_value, max_info, min_value, min_info] = find_max_in_h5_timeseries(LES_file_path, file_basename, start_index, end_index, ...
                                                    phase_name, grid_names, dataset_name);
 
 %% ========== DISPLAY RESULTS ==========
@@ -32,15 +32,21 @@ if ~isnan(max_value)
     fprintf('==============================================\n');
     fprintf('Maximum Value: %.10e\n', max_value);
     fprintf('File: %s (index %d)\n', max_info.filename, max_info.file_index);
-    fprintf('Block ID: %s\n', max_info.block_id);
+    fprintf('Grid: %s, Block ID: %s\n', max_info.grid, max_info.block_id);
     fprintf('Full Path: /%s/%s/fields/%s/%s\n', ...
             max_info.phase, max_info.grid, max_info.block_id, max_info.dataset);
+    fprintf('\n');
+    fprintf('Minimum Value: %.10e\n', min_value);
+    fprintf('File: %s (index %d)\n', min_info.filename, min_info.file_index);
+    fprintf('Grid: %s, Block ID: %s\n', min_info.grid, min_info.block_id);
+    fprintf('Full Path: /%s/%s/fields/%s/%s\n', ...
+            min_info.phase, min_info.grid, min_info.block_id, min_info.dataset);
     fprintf('==============================================\n');
     
     % Optional: Save results to file
     if save_results
-        results_file = sprintf('max_value_results_%s_%d_%d.mat', dataset_name, start_index, end_index);
-        save(results_file, 'max_value', 'max_info');
+        results_file = sprintf('max_min_value_results_%s_%d_%d.mat', dataset_name, start_index, end_index);
+        save(results_file, 'max_value', 'max_info', 'min_value', 'min_info');
         fprintf('Results saved to: %s\n', results_file);
     end
 else
